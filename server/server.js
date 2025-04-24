@@ -27,6 +27,14 @@ const port = 8081;
     }
   });
 
+app.get('/', (req, res) =>{
+const sql = "SELECT * FROM student";
+db.query(sql , (err , result)=>{
+  if(err) return res.json({message: "error inside server"});
+  return res.json(result);
+})
+});
+
 app.listen((port,()=>{ 
 console.log("the app is running on port 8081")
 })

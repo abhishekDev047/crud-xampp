@@ -1,7 +1,15 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { Link } from 'react-router-dom';
+import axios from "axios";
 
 function Home() {
+
+    useEffect(() => {
+      axios.get("http://localhost:8081/")
+      .then(res => console.log(res))
+    .catch(err => console.log(err));
+    }, []);
+    
 
     const handleDelete = ()=>{
       console.log("delete button is working fine")
