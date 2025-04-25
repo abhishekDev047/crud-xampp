@@ -1,12 +1,14 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom';
 import axios from "axios";
 
 function Home() {
+  const [data , setData] = useState([]);
 
     useEffect(() => {
-      axios.get("http://localhost:8081/")
-      .then(res => console.log(res))
+      axios.get("http://localhost:8081")
+      .then(res =>{console.log("API Response:", res.data);
+       setData(res.data)})
     .catch(err => console.log(err));
     }, []);
     
@@ -31,16 +33,19 @@ function Home() {
                 </tr>
             </thead>
             <tbody>
-                <tr>
-                    <td>101</td>
-                    <td>Abhishek</td>
-                    <td>abhishek.47@yahoo.com</td>
+
+              {data.map((student,index)=>{
+                return <tr key={index}>
+                    <td>{student.ID}</td>
+                    <td>{student.Name}</td>
+                    <td>{student.Email}</td>
                     <td>
                         <Link to={`/read`} className="btn btn-sm btn-info">Read</Link>
                         <Link to={`/edit`} className="btn btn-sm btn-primary mx-2 "> Edit</Link>
                         <button onClick={()=>handleDelete()} className="btn btn-sm btn-danger "> Delete</button>
                     </td>
                 </tr>
+              })}
             </tbody>
         </table>
 
