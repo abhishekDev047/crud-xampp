@@ -19,27 +19,88 @@ const port = 8081;
   port: process.env.DB_PORT
   });
   
-  db.connect((err) => {
-    if (err) {
-      console.error('❌ Error connecting to database:', err);
-    } else {
-      console.log('✅ Connected to online MySQL database!');
-    }
+    
+    db.connect((err) => {
+      if (err) {
+        console.error('❌ Error connecting to database:', err);
+      } else {
+        console.log('✅ Connected to online MySQL database!');
+      }
+    });
+  
+  app.get('/', (req, res) =>{
+  const sql = "SELECT * FROM student";
+  db.query(sql , (err , result)=>{
+    if(err) { res.json({message: "error inside server"});
+    console.log("error :", err);
+  }
+    else{
+     res.json(result);
+  };
+  })
   });
+  
+  app.post('/create', (req, res)=>{
+    const sql = "INSERT INTO student (`Name`, `Email`) VALUES (?,?)";
+    console.log(req.body);
+    const values = [
+      req.body.name,
+      req.body.email  ];
+      db.query(sql ,values, (err, result)=>{
+        if(err) { res.json(err);
+        console.log("error :", err);
+      }
+        else{
+         res.json(result);
+      };
+      })
+  });
+  
+  
+  app.get('/read/:id', (req, res) =>{
+    const sql = "SELECT * FROM student WHERE ID=?";
+    const id = req.params.id;
+    db.query(sql ,[id] , (err , result)=>{
+      if(err) { res.json({message: "error inside server"});
+      console.log("error :", err);
+    }
+      else{
+       res.json(result[0]);
+    };
+    })
+    });
 
-app.get('/', (req, res) =>{
-const sql = "SELECT * FROM student";
-db.query(sql , (err , result)=>{
-  if(err) { res.json({message: "error inside server"});
-  console.log("error :", err);
-}
-  else{
-   res.json(result);
-};
-})
-});
+    app.put('/edit/:id', (req, res) => {
+      const sql = "UPDATE student SET Name = ?, Email = ? WHERE ID = ?";
+      const id = req.params.id;
+      const values = [
+        req.body.name,
+        req.body.email
+      ];
+      db.query(sql, [...values, id], (err, result) => {
+        if(err) { 
+          res.json({message: "error inside server"});
+          console.log("error :", err);
+        } else {
+          res.json(result);
+        }
+      });
+    });
 
-app.listen(port,()=>{ 
-console.log("the app is running on port 8081")
-}
-);
+    app.delete('/delete/:id', (req,res)=>{
+      const sql = "DELETE FROM student WHERE ID=?";
+      const id = req.params.id;
+      db.query(sql ,[id] , (err , result)=>{
+        if(err) { res.json({message: "error inside server"});
+        console.log("error :", err);
+      }
+        else{
+         res.json(result);
+      };
+      })
+    })
+  
+  app.listen(port,()=>{ 
+  console.log("the app is running on port 8081")
+  }
+  );
